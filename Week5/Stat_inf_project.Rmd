@@ -1,0 +1,106 @@
+---
+title: "Statistical inference with the GSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+```
+
+### Load data
+
+```{r load-data}
+load("gss.Rdata")
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+> Since 1972, the General Society Surcey (GSS) has provided politicians, policymakers, and scholars with a clear and unbiased perspective on what Americans think and feel about such issues as national spending priorities, crime and punishment, intergroup relations, and confidence in institutions. [[source](http://gss.norc.org)]
+
+The GSS is a socioloaigcal survey used to collect data on American society in order to monitor and explain trends and constants in attotides, behaviors, and attributes. The GSS contains a standard core of demographic, behavioral, and attitudinal questions, plus topics of special interest. Among the topics covered are civil liberties, crime and violence, intergroup tolerance, morality, national spending priorities, psychological well-being, social mobility, and stress and traumatic event.
+
+The data used in this project is contained in gss.Rdata. This exerpt of the full GSS cumulative file 1972-2012 is a covenient data resource for students to learn about statistical reasoning using R. It contains 57061 observations made on 114 variables, which are described in the gss.html codebook. 
+
+Since this survey uses a large random sample, the data are generalizable to the adult population. But since this is a long term observational study, it is not possible to infer causal links.
+
+* * *
+
+## Part 2: Research question
+
+This analysis will focus on whether enthusiasm about national spending to improve and protect the environment is dependent on party affiliation for the year 2012. Environmental scientists can use this analysis to communicate across party lines.  
+
+First, let's move the variables of interest into a smaller dataframe and remove NAs.
+
+```{r}
+gss_cut <-select(gss, partyid, natenvir, year)
+gss_cut <-filter(gss_cut, !is.na(partyid), !is.na(natenvir), year=="2012")
+```
+
+The new dataframes contain 965 observations on these two variables.
+
+### Variables:
+* partyid: Political party affiliation is a categorical variable, with 8 possible outcomes
+summary(gss_cut$partyid)
+
+* natenvir: Improving and protecting the environment as a national priority, with three possible outcomes.
+summary(gss_cut$natenvir)
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+```{r}
+ggplot(data=gss_cut, aes(x = gss_cut$partyid, fill = gss_cut$natenvir)) + geom_bar()+
+    labs(x = "party affiliation", fill = 'Environment') + theme(axis.text.x = element_text(angle=45,size=8))
+```
+
+
+* * *
+
+## Part 4: Inference
+
+### Hypotheses:
+
+H0: Party affilliation and perception of government spending on improving the environment are independent.
+HA: Party affilliation and perception of government spending on improving the environment are dependent.
+
+### Conditions for the Chi Square test
+1. Independence:
+    * Random sample/assignment
+    * n=965 observations which is less than 10% of the American population
+    * each case only contributes to one cell in the table
+    
+2. Sample size: Most of the scenario have 5 or more sample size except for one. Assume the test will still work here for illustrative purposes.
+
+```{r}
+library(MASS)
+tbl = table(gss_cut$partyid, gss_cut$natenvir)
+tbl
+```
+
+### Test
+
+```{r}
+chisq.test(tbl)
+```
+
+Considering the small p-value, we reject the null that party affiliation and perception of funding for improving and protecting the environment are independent.
+
+The warning message comes from the fact that we have cells with a low number of counts. One possible way to avoid this problem is grouping the democrats, republicans and independents together. 
+
+
+

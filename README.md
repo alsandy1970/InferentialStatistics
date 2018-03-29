@@ -11,3 +11,9 @@ This repository contains the code for the Coursera Inferential Statistics from D
 ## Week 3: Inference for numerical data
 
 ## Week 4: Inference for categorical data
+
+## Week 5: Course project
+Files:
+- Data: gss.Rdata
+- Codebook: gss.html
+- Rmd code: stat_inf_project.Rmd
