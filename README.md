@@ -9,3 +9,5 @@ This repository contains the code for the Coursera Inferential Statistics from D
 ## Week 2: Confidence interval
 
 ## Week 3: Inference for numerical data
+
+## Week 4: Inference for categorical data
